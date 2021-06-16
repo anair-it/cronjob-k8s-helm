@@ -1,0 +1,11 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: |-
+  Cron job helm chart for Redhat Openshift
+name: cronjob
+keywords:
+  - cronjob
+  - cron
+maintainers:
+  - name: Anoop Nair
+version: 1.0.0

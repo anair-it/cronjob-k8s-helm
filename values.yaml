@@ -1,0 +1,38 @@
+ image:
+   repository:
+   tag:
+
+ # Configure multiple jobs.
+ jobs:
+   "0":
+     name: app-refresh-cache
+     command: >-
+       date; echo "Refreshing my caches";
+       curl -v -X POST http://myapp.mynamespace.svc.cluster.local:8080/cache/my-cache/refresh;
+       echo "Refreshed my caches";
+       exit 0
+     schedule: "@hourly"
+     resources:
+       limits:
+         cpu: 10m
+         memory: 100Mi
+       requests:
+         cpu: 10m
+         memory: 100Mi
+   "1":
+     name: clear-cache
+     command: >-
+       date; echo "Clearing cache";
+       curl -v -X DELETE http://myapp.mynamespace.svc.cluster.local:8080/cache/my-cache/clear;
+       echo "Clearing cache";
+       exit 0
+     schedule: "*/15 * * * *"
+     resources:
+       limits:
+         cpu: 10m
+         memory: 100Mi
+       requests:
+         cpu: 10m
+         memory: 100Mi
+
+

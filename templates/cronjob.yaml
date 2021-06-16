@@ -1,0 +1,37 @@
+{{- $chart_name := .Chart.Name }}
+{{- range $job, $val := .Values.jobs }}
+---
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: {{ .name }}
+  labels:
+    job: {{ .name }}
+    chart: {{ $chart_name }}
+spec:
+  schedule: {{ .schedule | quote }}
+  concurrencyPolicy: {{ .concurrencyPolicy | default "Allow" }}
+  failedJobsHistoryLimit: 10
+  successfulJobsHistoryLimit: 5
+  suspend: {{ .suspend | default false }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ .name }}
+              image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+              args:
+                - /bin/sh
+                - '-c'
+                - {{ .command }}
+              {{- if .containerEnv }}  
+              env:
+                {{ toYaml .containerEnv | nindent 16 }}
+              {{- end }}
+              resources:
+                {{- toYaml .resources | nindent 16 }}
+              imagePullPolicy: {{ $.Values.image.pullPolicy | default "IfNotPresent" }}
+          restartPolicy: {{ .restartPolicy | default "OnFailure" }}
+---
+{{- end}}
